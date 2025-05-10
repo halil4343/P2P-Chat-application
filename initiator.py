@@ -14,10 +14,10 @@ def view_users():
     now = time.time()
     
     if not peers:
-        print("No peers discovered yet. Waiting for announcements...")
+        print("No peers found yet")
         return
     
-    print("\n=== Network Peers ===")
+    print("\n=== Network Users ===")
     for ip, info in peers.items():
         username = info['username']
         last_seen = now - info['last_seen']
@@ -29,7 +29,7 @@ def view_users():
         else:
             status = "⚪ Offline"
             
-        print(f"{username:20} {status} ({int(last_seen)}s ago)")
+        print(f"- {username:20} {status} ({int(last_seen)}s ago)")
 
 def chat_session(target, target_ip):
     print(f"\n🚀 Starting chat with {target} ({target_ip})")
@@ -46,7 +46,7 @@ def chat_session(target, target_ip):
                 s.connect((target_ip, 6001))
                 s.sendall(message.encode())
             
-            # Log the sent message
+           
             with open('chat_log.txt', 'a') as f:
                 timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
                 f.write(f"[{timestamp}] TO {target}: {message}\n")
