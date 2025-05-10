@@ -1,0 +1,25 @@
+CMP2204 Term Project – Platform and Team Notes
+
+Platform Used:
+---------------
+Development and testing were completed on:
+- Operating System: Windows 11 (also compatible with Linux)
+- Python Version: 3.11
+
+Challenges Faced:
+-----------------
+- Synchronizing processes using shared files
+- Timing issues in detecting "away" users accurately
+- Handling peer IP mapping with usernames reliably
+- Simulating Diffie-Hellman key exchange in a terminal-based system
+
+Team Members:
+-------------
+- Alice Kaya – Implemented discovery and announcer modules
+- Bora Demir – Handled chat responder and encryption setup
+- Cem Yılmaz – Developed chat initiator and logging mechanism
+
+Workload Distribution:
+----------------------
+Each member took full ownership of one module and participated in group debugging and integration. All members contributed equally to testing and documentation.
+
