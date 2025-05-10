@@ -2,39 +2,39 @@ import socket
 import time
 import json
 
-BROADCAST_IP = '192.168.1.255'  # Removed leading space
-PORT = 6000
-INTERVAL = 8  
+def get_broadcast_address():
+    """Get the appropriate broadcast address for the network"""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))  # Connect to Google DNS
+        ip = s.getsockname()[0]
+        s.close()
+        # Create broadcast address from IP (works for most home networks)
+        return '.'.join(ip.split('.')[:-1] + ['255'])
+    except:
+        return '255.255.255.255'  # Fallback to universal broadcast
 
 def start_announcer(username):
+    PORT = 6000
+    INTERVAL = 8
+    
+    # Get the right broadcast address for this network
+    broadcast_ip = get_broadcast_address()
+    
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    sock.bind(('0.0.0.0', 0))  # Bind to all interfaces
     
-    # Set timeout to prevent indefinite blocking
-    sock.settimeout(0.2)
+    print(f"🔊 Announcing as '{username}' to {broadcast_ip} every {INTERVAL}s")
     
-    print(f"📢 Starting announcer as '{username}' ({BROADCAST_IP})")
-    print(f"Broadcasting every {INTERVAL} seconds...")
-    print("Press Ctrl+C to stop\n")
-
     try:
         while True:
-            message = json.dumps({
-                "username": username,
-                "ip": BROADCAST_IP,
-                "timestamp": time.time()
-            })
-            
-            try:
-                sock.sendto(message.encode(), (BROADCAST_IP, PORT))
-                print(f"[{time.strftime('%H:%M:%S')}]  '{username}' ({BROADCAST_IP}) announced")
-            except socket.error as e:
-                print(f"Broadcast error: {e}")
-            
+            message = json.dumps({"username": username})
+            sock.sendto(message.encode(), (broadcast_ip, PORT))
+            print(f"{username} is online at {broadcast_ip}")
             time.sleep(INTERVAL)
-            
     except KeyboardInterrupt:
-        print("\nStopping announcer...")
+        print("\nStopping announcer")
     finally:
         sock.close()
 
