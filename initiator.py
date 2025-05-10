@@ -24,6 +24,24 @@ def save_message(username, message, direction):
         timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
         f.write(f"[{timestamp}] {direction} {username}: {message}\n")
 
+def chat_session(target, target_ip):
+    print(f"\n💬 Chatting with {target} (type 'exit' to end)")
+    while True:
+        message = input("You: ")
+        
+        if message.lower() == 'exit':
+            print("Exiting chat...")
+            break
+            
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.connect((target_ip, 6001))
+                s.sendall(message.encode())
+            save_message(target, message, "TO")
+            print("Message sent!")
+        except Exception as e:
+            print(f"Failed to send: {e}")
+
 def start_chat():
     peers = load_peers()
     target = input("\nEnter username to chat with: ")
@@ -39,17 +57,7 @@ def start_chat():
         print("❌ User not found!")
         return
     
-    message = input("Type your message: ")
-    
-    try:
-        # Simple TCP connection
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((target_ip, 6001))
-            s.sendall(message.encode())
-        print("✅ Message sent!")
-        save_message(target, message, "TO")
-    except Exception as e:
-        print(f"❌ Failed to send: {e}")
+    chat_session(target, target_ip)
 
 def show_history():
     try:
